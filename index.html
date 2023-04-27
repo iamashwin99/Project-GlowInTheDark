@@ -14,6 +14,21 @@
                     customSection.style.display = "none";
                 }
             }
+            window.addEventListener('DOMContentLoaded', function() {
+                var brightnessSlider = document.getElementById('brightnessSlider');
+                var brightnessValue = document.getElementById('brightnessValue');
+                brightnessValue.innerHTML = brightnessSlider.value;
+                brightnessSlider.addEventListener('input', function() {
+                    brightnessValue.innerHTML = this.value;
+                });
+
+                var delaySlider = document.getElementById('delay');
+                var delayValue = document.getElementById('delayValue');
+                delayValue.innerHTML = delaySlider.value;
+                delaySlider.addEventListener('input', function() {
+                    delayValue.innerHTML = this.value;
+                });
+            });
         </script>
     </head>
     <body>
@@ -23,13 +38,15 @@
                 <form action="/" method="get">
                     <div class="my-4">
                         <label class="block font-bold mb-2" for="brightnessSlider">
-                            Brightness
+                            Brightness (%) - 
+                            <span id="brightnessValue" class="ml-2"></span>
                         </label>
                         <input class="block appearance-none w-full bg-gray-200 rounded h-2 overflow-hidden" type="range" id="brightnessSlider" name="brightness" min="0" max="100" value="50" />
                     </div>
                     <div class="my-4">
                         <label class="block font-bold mb-2" for="delay">
-                            Refresh delay (ms)
+                            Refresh delay (ms) -
+                            <span id="delayValue" class="ml-2"></span>
                         </label>
                         <input class="block appearance-none w-full bg-gray-200 rounded h-2 overflow-hidden" type="range" id="delay" name="delay" min="0" max="200" value="20" />
                     </div>
