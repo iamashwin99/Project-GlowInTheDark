@@ -23,6 +23,8 @@ int16_t head = 0;    // Index of first 'on' pixel
 int16_t tail = -10;  // Index of first 'off' pixel
 uint32_t color = 0xFF0000;  // 'On' color (starts red)
 uint8_t leds_to_skip = 0;   // Number of LEDs to skip between each LED
+uint8_t brightnessValue, delayValue; // Brightness and delay values
+String patternValue, pixelValues[6]; // Pattern type and if custom pattern, pixel values
 
 // --- Public function definitions ---
 
@@ -54,13 +56,10 @@ void setup()
   // Start the SPI Flash Files System
   SPIFFS.begin();
 
-  // If the client requests any URI, send it if it exists, otherwise, respond with a 404 (Not Found) error
-  server.onNotFound([]()
-  {
-    if (!handleFileRead(server.uri()))
-    server.send(404, "text/plain", "404: Not Found");
-  });
-
+  server.onNotFound(handleNotFound);
+  server.on("/", HTTP_GET, handleRoot); 
+  server.on("/set", HTTP_GET, parseQueryString);
+  server.onNotFound(handleNotFound);
   // Actually start the server
   server.begin();
   Serial.println("HTTP server started");
@@ -76,10 +75,29 @@ void loop()
 
 
 // --- Local function definitions ---
+void handleNotFound(){
+  server.send(404, "text/plain", "404: Not found"); // Send HTTP status 404 (Not Found) when there's no handler for the URI in the request
+}
 
 static void handleLedStrip()
 {
-  rainbow(20) 
+  // set brightness
+  strip.setBrightness(brightnessValue);
+  if(patternValue=="rainbow") {
+    rainbowPattern(delayValue);
+  } else if(patternValue=="stranded") {
+    strandedPattern(delayValue);
+  } else if(patternValue=="custom") {
+    customPattern(delayValue);
+  } else {
+    // set all pixels to the same color
+    for (int i = 0; i < NUMPIXELS; i++)
+    {
+      strip.setPixelColor(i, color);
+    }
+    strip.show();
+    delay(delayValue);
+  } 
 }
 
 static void strandedPattern(int wait)
@@ -104,7 +122,7 @@ static void strandedPattern(int wait)
 
 // Rainbow cycle along whole strip. Pass delay time (in ms) between frames.
 // From https://github.com/adafruit/Adafruit_DotStar/blob/master/examples/onboard/onboard.ino
-void rainbow(int wait) {
+void rainbowPattern(int wait) {
   // Hue of first pixel runs 5 complete loops through the color wheel.
   // Color wheel has a range of 65536 but it's OK if we roll over, so
   // just count from 0 to 5*65536. Adding 256 to firstPixelHue each time
@@ -127,76 +145,58 @@ void rainbow(int wait) {
   }
 }
 
-
-// convert the file extension to the MIME type
-static String getContentType(String filename)
+static void customPattern(int wait)
 {
-  if (filename.endsWith(".html"))
+  for (int i = 0; i < NUMPIXELS; i+=leds_to_skip)
   {
-    return "text/html";
+    strip.setPixelColor(i, pixelValues[i].toInt());
   }
-  else if (filename.endsWith(".css"))
-  {
-    return "text/css";
-  }
-  else if (filename.endsWith(".js"))
-  {
-    return "application/javascript";
-  }
-  else if (filename.endsWith(".ico"))
-  {
-    return "image/x-icon";
-  }
-  return "text/plain";
+  strip.show();
+  delay(wait);
 }
 
+void parseQueryString(String queryString) {
+  int paramIndex = 0;
+  while (queryString.length() > 0) {
+    int nextAmpIndex = queryString.indexOf("&");
+    String paramValue;
+    if (nextAmpIndex == -1) {
+      paramValue = queryString;
+      queryString = "";
+    } else {
+      paramValue = queryString.substring(0, nextAmpIndex);
+      queryString = queryString.substring(nextAmpIndex + 1);
+    }
 
-/* Send the right file to the client (if it exists)
- * Return true if file exists else false
- */
-static bool handleFileRead(String path)
-{
-  bool ret;
+    int equalsIndex = paramValue.indexOf("=");
+    String paramName = paramValue.substring(0, equalsIndex);
+    String paramVal = paramValue.substring(equalsIndex + 1);
 
-  Serial.println("handleFileRead: " + path);
+    if (paramName == "brightness") {
+      brightnessValue = paramVal.toInt();
+    } else if (paramName == "delay") {
+      delayValue = paramVal.toInt();
+    } else if (paramName == "spacing") {
+      leds_to_skip = paramVal.toInt();
+    } else if (paramName == "pattern") {
+      patternValue = paramVal;
+    } else if (paramName.startsWith("pixel")) {
+      int pixelIndex = paramName.substring(5).toInt() - 1;
+      pixelValues[pixelIndex] = paramVal;
+    }
 
-  // Turns the GPIOs on and off
-  if (path.indexOf("GET /0/on") >= 0)
-  {
-    Serial.println("GPIO 0 on");
-    output0State = "on";
-    digitalWrite(LED_PIN, HIGH);
-  }
-  else if (path.indexOf("GET /0/off") >= 0)
-  {
-    Serial.println("GPIO 0 off");
-    output0State = "off";
-    digitalWrite(LED_PIN, LOW);
-  }
-
-  // If a folder is requested, send the index file
-  if (path.endsWith("/"))
-  {
-    path += "index.html";
-  }
-
-  // Get the MIME type
-  String contentType = getContentType(path);
-
-  // If the file exists, open it, send it to the client, close the file
-  if (SPIFFS.exists(path))
-  {
-    File file = SPIFFS.open(path, "r");
-    size_t sent = server.streamFile(file, contentType);
-    file.close();
-    ret = true;
-  }
-  else
-  {
-    // If the file doesn't exist, return false
-    Serial.println("\tFile Not Found");
-    ret = false;
+    paramIndex++;
   }
 
-  return ret;
+  // Now set the appropriate variables based on the parsed values
+  setBrightness(brightnessValue);
+  setDelay(delayValue);
+  setSpacing(leds_to_skip);
+  if (patternValue == "custom") {
+    setCustomPattern(pixelValues);
+  } else if (patternValue == "rainbow") {
+    setRainbowPattern();
+  } else if (patternValue == "strand") {
+    setStrandPattern();
+  }
 }
