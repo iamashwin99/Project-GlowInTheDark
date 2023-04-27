@@ -188,10 +188,6 @@ void parseQueryString(String queryString) {
     paramIndex++;
   }
 
-  // Now set the appropriate variables based on the parsed values
-  setBrightness(brightnessValue);
-  setDelay(delayValue);
-  setSpacing(leds_to_skip);
   if (patternValue == "custom") {
     setCustomPattern(pixelValues);
   } else if (patternValue == "rainbow") {
