@@ -52,6 +52,13 @@ void setup() {
   IPAddress myIP = WiFi.softAPIP();
   Serial.print("AP IP address: ");
   Serial.println(myIP);
+  // check that the AP is up
+  while (true) {
+    if (WiFi.status() != WL_CONNECTED) {
+      Serial.println("Error setting up AP");
+      delay(1000);
+    }
+  }
 
 
   // Start the SPI Flash Files System
@@ -90,18 +97,15 @@ void handleNotFound() {
 void handleRoot() {
   // If the file exists, open it, send it to the client, close the file
   String path = "/index.html";
-  if (SPIFFS.exists(path))
-  {
+  if (SPIFFS.exists(path)) {
     File file = SPIFFS.open(path, "r");
     size_t sent = server.streamFile(file, "text/html");
     file.close();
-  }
-  else
-  {
+  } else {
     // If the file doesn't exist, return false
     Serial.println("\tFile Not Found");
   }
-  }
+}
 
 static void handleLedStrip() {
   // set brightness
@@ -172,8 +176,8 @@ static void customPattern(int wait) {
   delay(wait);
 }
 
-void parseQueryString(){
-    /*
+void parseQueryString() {
+  /*
   We need to handle get requests to the /set path. here is a sample uri
   /set?brightness=50&delay=33&spacing=1&pattern=strand&pixel1=%23000000&pixel2=%23000000&pixel3=%23000000&pixel4=%23000000&pixel5=%23000000&pixel6=%23000000
   We can handle these via UriRegex
@@ -203,7 +207,6 @@ void parseQueryString(){
   Serial.println("pixelValues[5]: " + pixelValues[5]);
 
   server.send(200, "text/plain", "Updated");
-
 }
 
 // void parseQueryString(String queryString) {
