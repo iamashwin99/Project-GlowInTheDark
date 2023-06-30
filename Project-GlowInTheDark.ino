@@ -4,10 +4,10 @@
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
-#include <ESPAsyncTCP.h>
-#include <ESPAsyncWebServer.h>
+// #include <ESPAsyncTCP.h>
+// #include <ESPAsyncWebServer.h>
 #include <FS.h>
-
+#include <uri/UriRegex.h>
 #include <Adafruit_DotStar.h>
 #include <SPI.h>
 
@@ -66,7 +66,9 @@ void setup() {
   so something like:
   server.on(UriRegex("/set\?brightness=(\d+)&delay=(\d+)&spacing=(\d+)&pattern=(\w+)&pixel1=(\w+)&pixel2=(\w+)&pixel3=(\w+)&pixel4=(\w+)&pixel5=(\w+)&pixel6=(\w+)"), HTTP_GET, parseQueryString();
   */
-  server.on(UriRegex("/set\?brightness=(\d+)&delay=(\d+)&spacing=(\d+)&pattern=(\w+)&pixel1=(\w+)&pixel2=(\w+)&pixel3=(\w+)&pixel4=(\w+)&pixel5=(\w+)&pixel6=(\w+)"), HTTP_GET, parseQueryString();
+  server.on(UriRegex("^\\/set\\?brightness=([0-9]+)&delay=([0-9]+)&spacing=([0-9]+)&pattern=([a-zA-Z0-9_]+)&pixel1=([a-zA-Z0-9_]+)&pixel2=([a-zA-Z0-9_]+)&pixel3=([a-zA-Z0-9_]+)&pixel4=([a-zA-Z0-9_]+)&pixel5=([a-zA-Z0-9_]+)&pixel6=([a-zA-Z0-9_]+)$"), parseQueryString);
+
+  // server.on(UriRegex("/set\?brightness=(\d+)&delay=(\d+)&spacing=(\d+)&pattern=(\w+)&pixel1=(\w+)&pixel2=(\w+)&pixel3=(\w+)&pixel4=(\w+)&pixel5=(\w+)&pixel6=(\w+)"), HTTP_GET, parseQueryString);
   // Actually start the server
   server.begin();
   Serial.println("HTTP server started");
