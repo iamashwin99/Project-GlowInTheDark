@@ -65,6 +65,7 @@ void setup() {
   /*
   We need to handle get requests to the /set path. here is a sample uri
   /set?brightness=50&delay=33&spacing=1&pattern=strand&pixel1=%23000000&pixel2=%23000000&pixel3=%23000000&pixel4=%23000000&pixel5=%23000000&pixel6=%23000000
+  */
   // Actually start the server
   server.begin();
   Serial.println("HTTP server started");
