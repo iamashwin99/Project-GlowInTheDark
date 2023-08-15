@@ -1,14 +1,14 @@
 // --- Includes ---
 #include <Arduino.h>
 
-#include <ESP8266WiFi.h>
+#include <ESP8266WiFi.h> // for setting up the softAP
 #include <WiFiClient.h>
-#include <ESP8266WebServer.h>
+#include <ESP8266WebServer.h> // for setting up server
 // #include <ESPAsyncTCP.h>
 // #include <ESPAsyncWebServer.h>
 #include <FS.h>
 #include <uri/UriRegex.h>
-#include <Adafruit_DotStar.h>
+#include <Adafruit_DotStar.h>  // for the leds
 #include <SPI.h>
 
 
@@ -61,6 +61,7 @@ void setup() {
 
   server.onNotFound(handleNotFound);
   server.on("/", HTTP_GET, handleRoot);
+  server.on("/set", HTTP_GET, parseQueryString);
   /*
   We need to handle get requests to the /set path. here is a sample uri
   /set?brightness=50&delay=33&spacing=1&pattern=strand&pixel1=%23000000&pixel2=%23000000&pixel3=%23000000&pixel4=%23000000&pixel5=%23000000&pixel6=%23000000
@@ -68,7 +69,7 @@ void setup() {
   so something like:
   server.on(UriRegex("/set\?brightness=(\d+)&delay=(\d+)&spacing=(\d+)&pattern=(\w+)&pixel1=(\w+)&pixel2=(\w+)&pixel3=(\w+)&pixel4=(\w+)&pixel5=(\w+)&pixel6=(\w+)"), HTTP_GET, parseQueryString();
   */
-  server.on(UriRegex("^\\/set\\?brightness=([0-9]+)&delay=([0-9]+)&spacing=([0-9]+)&pattern=([a-zA-Z0-9_]+)&pixel1=([a-zA-Z0-9_]+)&pixel2=([a-zA-Z0-9_]+)&pixel3=([a-zA-Z0-9_]+)&pixel4=([a-zA-Z0-9_]+)&pixel5=([a-zA-Z0-9_]+)&pixel6=([a-zA-Z0-9_]+)$"), parseQueryString);
+  // server.on(UriRegex("^\\/set\\?brightness=([0-9]+)&delay=([0-9]+)&spacing=([0-9]+)&pattern=([a-zA-Z0-9_]+)&pixel1=([a-zA-Z0-9_]+)&pixel2=([a-zA-Z0-9_]+)&pixel3=([a-zA-Z0-9_]+)&pixel4=([a-zA-Z0-9_]+)&pixel5=([a-zA-Z0-9_]+)&pixel6=([a-zA-Z0-9_]+)$"), parseQueryString);
 
   // server.on(UriRegex("/set\?brightness=(\d+)&delay=(\d+)&spacing=(\d+)&pattern=(\w+)&pixel1=(\w+)&pixel2=(\w+)&pixel3=(\w+)&pixel4=(\w+)&pixel5=(\w+)&pixel6=(\w+)"), HTTP_GET, parseQueryString);
   // Actually start the server
@@ -188,22 +189,32 @@ void parseQueryString() {
   /*
   We need to handle get requests to the /set path. here is a sample uri
   /set?brightness=50&delay=33&spacing=1&pattern=strand&pixel1=%23000000&pixel2=%23000000&pixel3=%23000000&pixel4=%23000000&pixel5=%23000000&pixel6=%23000000
-  We can handle these via UriRegex
-  this function is called from something like:
-  server.on(UriRegex("/set\?brightness=(\d+)&delay=(\d+)&spacing=(\d+)&pattern=(\w+)&pixel1=(\w+)&pixel2=(\w+)&pixel3=(\w+)&pixel4=(\w+)&pixel5=(\w+)&pixel6=(\w+)"), HTTP_GET, parseQueryString();
-  We need to handle these pathArg and set the right variables.
-  */
-  Serial.println("Parseing");
-  brightnessValue = server.pathArg(0).toInt();
-  delayValue = server.pathArg(1).toInt();
-  leds_to_skip = server.pathArg(2).toInt();
-  patternValue = server.pathArg(3);
-  pixelValues[0] = server.pathArg(4);
-  pixelValues[1] = server.pathArg(5);
-  pixelValues[2] = server.pathArg(6);
-  pixelValues[3] = server.pathArg(7);
-  pixelValues[4] = server.pathArg(8);
-  pixelValues[5] = server.pathArg(9);
+  This we expect to be parsed into 10 arguments:
+    arg1: brightness: 50
+    arg2: delay: 20
+    arg3: spacing: 0
+    arg4: pattern: rainbow
+    arg5: pixel1: #000000
+    arg6: pixel2: #000000
+    arg7: pixel3: #000000
+    arg8: pixel4: #000000
+    arg9: pixel5: #000000
+    arg10: pixel6: #000000
+
+   */
+
+  Serial.println("Parsing . . . ");
+  brightnessValue = server.arg(0).toInt();
+  delayValue = server.arg(1).toInt();
+  leds_to_skip = server.arg(2).toInt();
+  patternValue = server.arg(3);
+  pixelValues[0] = server.arg(4);
+  pixelValues[1] = server.arg(5);
+  pixelValues[2] = server.arg(6);
+  pixelValues[3] = server.arg(7);
+  pixelValues[4] = server.arg(8);
+  pixelValues[5] = server.arg(9);
+  Serial.println("Got ::: ");
   Serial.println("brightnessValue: " + String(brightnessValue));
   Serial.println("delayValue: " + String(delayValue));
   Serial.println("leds_to_skip: " + String(leds_to_skip));
