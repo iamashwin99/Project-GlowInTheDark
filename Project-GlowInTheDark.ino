@@ -23,10 +23,15 @@ Adafruit_DotStar strip =
   Adafruit_DotStar(NUMPIXELS, DOTSTAR_DATA_PIN, DOTSTAR_CLOCK_PIN, DOTSTAR_BRG);
 int16_t head = 0;                     // Index of first 'on' pixel
 int16_t tail = -10;                   // Index of first 'off' pixel
+// Set some default values
+
 uint32_t color = 0xFF0000;            // 'On' color (starts red)
-uint8_t leds_to_skip = 0;             // Number of LEDs to skip between each LED
-uint8_t brightnessValue, delayValue;  // Brightness and delay values
-String patternValue, pixelValues[6];  // Pattern type and if custom pattern, pixel values
+uint8_t leds_to_skip = 1;             // Number of LEDs to skip between each LED
+uint32_t pixelValues[6] = {0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000};  // if custom pattern, pixel values
+
+uint8_t brightnessValue = 50; // Brightness
+uint8_t delayValue = 20;      // Delay between frames
+String patternValue = "stranded"; // Pattern to display : rainbow, stranded, custom, allsame
 
 // --- Public function definitions ---
 
@@ -112,7 +117,13 @@ void handleRoot() {
 
 static void handleLedStrip() {
   // set brightness
+  Serial.println(" Handle LED Strip");
+  Serial.println("brightnessValue: " + String(brightnessValue));
+  Serial.println("delayValue: " + String(delayValue));
+  Serial.println("leds_to_skip: " + String(leds_to_skip));
+  Serial.println("patternValue: " + patternValue);
   strip.setBrightness(brightnessValue);
+
   if (patternValue == "rainbow") {
     rainbowPattern(delayValue);
   } else if (patternValue == "stranded") {
@@ -149,6 +160,7 @@ static void strandedPattern(int wait) {
 // Rainbow cycle along whole strip. Pass delay time (in ms) between frames.
 // From https://github.com/adafruit/Adafruit_DotStar/blob/master/examples/onboard/onboard.ino
 void rainbowPattern(int wait) {
+  Serial.println("Rainbow Pattern");
   // Hue of first pixel runs 5 complete loops through the color wheel.
   // Color wheel has a range of 65536 but it's OK if we roll over, so
   // just count from 0 to 5*65536. Adding 256 to firstPixelHue each time
@@ -173,13 +185,14 @@ void rainbowPattern(int wait) {
 
 static void customPattern(int wait) {
   for (int i = 0; i < NUMPIXELS; i += leds_to_skip) {
-    strip.setPixelColor(i, pixelValues[i].toInt());
+    strip.setPixelColor(i, pixelValues[i]);
   }
   strip.show();
   delay(wait);
 }
 
 void parseQueryString() {
+  return;
   /*
   We need to handle get requests to the /set path. here is a sample uri
   /set?brightness=50&delay=33&spacing=1&pattern=strand&pixel1=%23000000&pixel2=%23000000&pixel3=%23000000&pixel4=%23000000&pixel5=%23000000&pixel6=%23000000
@@ -202,12 +215,14 @@ void parseQueryString() {
   delayValue = server.arg(1).toInt();
   leds_to_skip = server.arg(2).toInt();
   patternValue = server.arg(3);
-  pixelValues[0] = hex_string_to_int(server.arg(4));
-  pixelValues[1] = hex_string_to_int(server.arg(5));
-  pixelValues[2] = hex_string_to_int(server.arg(6));
-  pixelValues[3] = hex_string_to_int(server.arg(7));
-  pixelValues[4] = hex_string_to_int(server.arg(8));
-  pixelValues[5] = hex_string_to_int(server.arg(9));
+  if (patternValue == "custom"){
+    pixelValues[0] = hex_string_to_int(server.arg(4));
+    pixelValues[1] = hex_string_to_int(server.arg(5));
+    pixelValues[2] = hex_string_to_int(server.arg(6));
+    pixelValues[3] = hex_string_to_int(server.arg(7));
+    pixelValues[4] = hex_string_to_int(server.arg(8));
+    pixelValues[5] = hex_string_to_int(server.arg(9));
+  }
   Serial.println("Got ::: ");
   Serial.println("brightnessValue: " + String(brightnessValue));
   Serial.println("delayValue: " + String(delayValue));
@@ -221,6 +236,7 @@ void parseQueryString() {
   Serial.println("pixelValues[5]: " + pixelValues[5]);
 
   server.send(200, "text/plain", "Updated");
+  handleRoot();
 }
 
 uint32_t hex_string_to_int(String hex_string) {
