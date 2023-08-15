@@ -16,8 +16,8 @@ const uint8_t LED_PIN = 0;
 const uint8_t DOTSTAR_DATA_PIN = 4;
 const uint8_t DOTSTAR_CLOCK_PIN = 5;
 
-IPAddress local_IP(1,1,1,1);
-IPAddress gateway(1,1,1,1);
+IPAddress local_IP(7,7,7,7);
+IPAddress gateway(7,7,7,7);
 IPAddress subnet(255,255,255,0);
 
 
