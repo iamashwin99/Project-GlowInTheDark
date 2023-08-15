@@ -31,7 +31,7 @@ uint32_t pixelValues[6] = {0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x0
 
 uint8_t brightnessValue = 50; // Brightness
 uint8_t delayValue = 20;      // Delay between frames
-String patternValue = "stranded"; // Pattern to display : rainbow, stranded, custom, allsame
+String patternValue = "strand"; // Pattern to display : rainbow, strand, custom, allsame
 
 // --- Public function definitions ---
 
@@ -117,16 +117,16 @@ void handleRoot() {
 
 static void handleLedStrip() {
   // set brightness
-  Serial.println(" Handle LED Strip");
-  Serial.println("brightnessValue: " + String(brightnessValue));
-  Serial.println("delayValue: " + String(delayValue));
-  Serial.println("leds_to_skip: " + String(leds_to_skip));
-  Serial.println("patternValue: " + patternValue);
+//  Serial.println(" Handle LED Strip");
+//  Serial.println("brightnessValue: " + String(brightnessValue));
+//  Serial.println("delayValue: " + String(delayValue));
+//  Serial.println("leds_to_skip: " + String(leds_to_skip));
+//  Serial.println("patternValue: " + patternValue);
   strip.setBrightness(brightnessValue);
 
   if (patternValue == "rainbow") {
     rainbowPattern(delayValue);
-  } else if (patternValue == "stranded") {
+  } else if (patternValue == "strand") {
     strandedPattern(delayValue);
   } else if (patternValue == "custom") {
     customPattern(delayValue);
@@ -192,7 +192,6 @@ static void customPattern(int wait) {
 }
 
 void parseQueryString() {
-  return;
   /*
   We need to handle get requests to the /set path. here is a sample uri
   /set?brightness=50&delay=33&spacing=1&pattern=strand&pixel1=%23000000&pixel2=%23000000&pixel3=%23000000&pixel4=%23000000&pixel5=%23000000&pixel6=%23000000
@@ -235,7 +234,9 @@ void parseQueryString() {
   Serial.println("pixelValues[4]: " + pixelValues[4]);
   Serial.println("pixelValues[5]: " + pixelValues[5]);
 
-  server.send(200, "text/plain", "Updated");
+  // send 200 and redirect to root
+  server.sendHeader("Location", String("/"), true);
+
   handleRoot();
 }
 
