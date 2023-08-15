@@ -47,19 +47,14 @@ void setup() {
   Serial.println('\n');
 
   //  Create a wifi AP
-  WiFi.mode(WIFI_AP);
-  WiFi.softAP(SSID, PASSWORD);
-  IPAddress myIP = WiFi.softAPIP();
-  Serial.print("AP IP address: ");
-  Serial.println(myIP);
-  // check that the AP is up
-  while (true) {
-    if (WiFi.status() != WL_CONNECTED) {
-      Serial.println("Error setting up AP");
-      delay(1000);
-    }
-  }
+  Serial.print("Setting soft-AP configuration ... ");
+  Serial.println(WiFi.softAPConfig(local_IP, gateway, subnet) ? "Ready" : "Failed!");
 
+  Serial.print("Setting soft-AP ... ");
+  Serial.println(WiFi.softAP(SSID) ? "Ready" : "Failed!");
+
+  Serial.print("Soft-AP IP address = ");
+  Serial.println(WiFi.softAPIP());
 
   // Start the SPI Flash Files System
   SPIFFS.begin();
@@ -185,6 +180,7 @@ void parseQueryString() {
   server.on(UriRegex("/set\?brightness=(\d+)&delay=(\d+)&spacing=(\d+)&pattern=(\w+)&pixel1=(\w+)&pixel2=(\w+)&pixel3=(\w+)&pixel4=(\w+)&pixel5=(\w+)&pixel6=(\w+)"), HTTP_GET, parseQueryString();
   We need to handle these pathArg and set the right variables.
   */
+  Serial.println("Parseing");
   brightnessValue = server.pathArg(0).toInt();
   delayValue = server.pathArg(1).toInt();
   leds_to_skip = server.pathArg(2).toInt();
