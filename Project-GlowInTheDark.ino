@@ -65,13 +65,6 @@ void setup() {
   /*
   We need to handle get requests to the /set path. here is a sample uri
   /set?brightness=50&delay=33&spacing=1&pattern=strand&pixel1=%23000000&pixel2=%23000000&pixel3=%23000000&pixel4=%23000000&pixel5=%23000000&pixel6=%23000000
-  We can handle these via UriRegex
-  so something like:
-  server.on(UriRegex("/set\?brightness=(\d+)&delay=(\d+)&spacing=(\d+)&pattern=(\w+)&pixel1=(\w+)&pixel2=(\w+)&pixel3=(\w+)&pixel4=(\w+)&pixel5=(\w+)&pixel6=(\w+)"), HTTP_GET, parseQueryString();
-  */
-  // server.on(UriRegex("^\\/set\\?brightness=([0-9]+)&delay=([0-9]+)&spacing=([0-9]+)&pattern=([a-zA-Z0-9_]+)&pixel1=([a-zA-Z0-9_]+)&pixel2=([a-zA-Z0-9_]+)&pixel3=([a-zA-Z0-9_]+)&pixel4=([a-zA-Z0-9_]+)&pixel5=([a-zA-Z0-9_]+)&pixel6=([a-zA-Z0-9_]+)$"), parseQueryString);
-
-  // server.on(UriRegex("/set\?brightness=(\d+)&delay=(\d+)&spacing=(\d+)&pattern=(\w+)&pixel1=(\w+)&pixel2=(\w+)&pixel3=(\w+)&pixel4=(\w+)&pixel5=(\w+)&pixel6=(\w+)"), HTTP_GET, parseQueryString);
   // Actually start the server
   server.begin();
   Serial.println("HTTP server started");
@@ -208,12 +201,12 @@ void parseQueryString() {
   delayValue = server.arg(1).toInt();
   leds_to_skip = server.arg(2).toInt();
   patternValue = server.arg(3);
-  pixelValues[0] = server.arg(4);
-  pixelValues[1] = server.arg(5);
-  pixelValues[2] = server.arg(6);
-  pixelValues[3] = server.arg(7);
-  pixelValues[4] = server.arg(8);
-  pixelValues[5] = server.arg(9);
+  pixelValues[0] = hex_string_to_int(server.arg(4));
+  pixelValues[1] = hex_string_to_int(server.arg(5));
+  pixelValues[2] = hex_string_to_int(server.arg(6));
+  pixelValues[3] = hex_string_to_int(server.arg(7));
+  pixelValues[4] = hex_string_to_int(server.arg(8));
+  pixelValues[5] = hex_string_to_int(server.arg(9));
   Serial.println("Got ::: ");
   Serial.println("brightnessValue: " + String(brightnessValue));
   Serial.println("delayValue: " + String(delayValue));
@@ -229,37 +222,21 @@ void parseQueryString() {
   server.send(200, "text/plain", "Updated");
 }
 
-// void parseQueryString(String queryString) {
-//   int paramIndex = 0;
-//   while (queryString.length() > 0) {
-//     int nextAmpIndex = queryString.indexOf("&");
-//     String paramValue;
-//     if (nextAmpIndex == -1) {
-//       paramValue = queryString;
-//       queryString = "";
-//     } else {
-//       paramValue = queryString.substring(0, nextAmpIndex);
-//       queryString = queryString.substring(nextAmpIndex + 1);
-//     }
+uint32_t hex_string_to_int(String hex_string) {
+  /*
+  We need to convert #000000 ( string ) to 0x000000 ( int )
+  we can use strtol() to do this
+  strtol(&hex_string[1], NULL, 16):
+  This is a function call that converts a string to a long integer.
+  The arguments are as follows:
 
-//     int equalsIndex = paramValue.indexOf("=");
-//     String paramName = paramValue.substring(0, equalsIndex);
-//     String paramVal = paramValue.substring(equalsIndex + 1);
+  &hex_string[1]: This takes the memory address of
+    the second character in the string (skipping the initial #).
+  NULL: This argument is for the endptr parameter,
+    which is not being used in this case.
+  16: This indicates that the input string is in base-16 (hexadecimal)
 
-//     if (paramName == "brightness") {
-//       brightnessValue = paramVal.toInt();
-//     } else if (paramName == "delay") {
-//       delayValue = paramVal.toInt();
-//     } else if (paramName == "spacing") {
-//       leds_to_skip = paramVal.toInt();
-//     } else if (paramName == "pattern") {
-//       patternValue = paramVal;
-//     } else if (paramName.startsWith("pixel")) {
-//       int pixelIndex = paramName.substring(5).toInt() - 1;
-//       pixelValues[pixelIndex] = paramVal;
-//     }
-
-//     paramIndex++;
-//   }
-
-// }
+  */
+  uint32_t hex_int = (uint32_t) strtol(&hex_string[1], NULL, 16);
+  return hex_int;
+}
