@@ -184,7 +184,7 @@ void rainbowPattern(int wait) {
 }
 
 static void customPattern(int wait) {
-  for (int i = 0; i < NUMPIXELS; i += leds_to_skip) {
+  for (int i = 0; i < NUMPIXELS; i += (leds_to_skip+1)) {
     strip.setPixelColor(i, pixelValues[i]);
   }
   strip.show();
