@@ -166,7 +166,7 @@ void rainbowPattern(int wait) {
   // just count from 0 to 5*65536. Adding 256 to firstPixelHue each time
   // means we'll make 5*65536/256 = 1280 passes through this outer loop:
   for (long firstPixelHue = 0; firstPixelHue < 5 * 65536; firstPixelHue += 256) {
-    for (int i = 0; i < strip.numPixels(); i = i + leds_to_skip) {  // For each pixel in strip...
+    for (int i = 0; i < strip.numPixels(); i = i + (leds_to_skip+1)) {  // For each pixel in strip...
       // Offset pixel hue by an amount to make one full revolution of the
       // color wheel (range of 65536) along the length of the strip
       // (strip.numPixels() steps):
