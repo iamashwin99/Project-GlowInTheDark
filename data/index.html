@@ -55,15 +55,18 @@
     </head>
     <body>
         <div class="items-center justify-center w-screen">
-            <h1 class="text-2xl font-bold">ESP8266 - DotStar Controller</h1>
+            <div class="items-center justify-center flex align-middle">
+                <h1 class="text-4xl font-bold">ESP8266 - DotStar Controller</h1>
+            </div>
                 <!-- <form action="/set" method="get"> -->
-                    <div class="my-4">
-                        <label class="block font-bold mb-2" for="brightnessSlider">
-                            Brightness (%) -
-                            <span id="brightnessValue" class="ml-2"></span>
-                        </label>
-                        <input class="block appearance-none w-full bg-gray-200 rounded h-2 overflow-hidden" type="range" id="brightnessSlider" name="brightness" min="0" max="100" value="50" />
-                    </div>
+            <div class="my-4 flex flex-row align-middle">
+                <label class="font-bold text-2xl mb-2" for="brightnessSlider">
+                    Brightness:
+                    <span id="brightnessValue" class="ml-2"></span>
+                    %
+                </label>
+                <input class="mx-6 py-6 appearance-none bg-gray-200 w-1/2 rounded h-2 overflow-hidden" type="range" id="brightnessSlider" name="brightness" min="0" max="100" value="50" />
+            </div>
                     <div class="my-4">
                         <label class="block font-bold mb-2" for="delay">
                             Refresh delay (ms) -
