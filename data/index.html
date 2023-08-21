@@ -14,6 +14,25 @@
                     customSection.style.display = "none";
                 }
             }
+            function setParameter(){
+                // sends the parameters via a POST request to the server on /set endpoint
+                var  xhr = new XMLHttpRequest();
+                xhr.open("POST", "/set", true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                var data = {
+                    brightnessSlider: document.getElementById('brightnessSlider').value,
+                    delay: document.getElementById('delay').value,
+                    spacing: document.querySelector('input[name="spacing"]:checked').value,
+                    pattern: document.querySelector('input[name="pattern"]:checked').value,
+                    pixel1: document.getElementById('pixel1').value,
+                    pixel2: document.getElementById('pixel2').value,
+                    pixel3: document.getElementById('pixel3').value,
+                    pixel4: document.getElementById('pixel4').value,
+                    pixel5: document.getElementById('pixel5').value
+                };
+                xhr.send(JSON.stringify(data));
+
+            }
             window.addEventListener('DOMContentLoaded', function() {
                 var brightnessSlider = document.getElementById('brightnessSlider');
                 var brightnessValue = document.getElementById('brightnessValue');
@@ -38,7 +57,7 @@
                 <form action="/set" method="get">
                     <div class="my-4">
                         <label class="block font-bold mb-2" for="brightnessSlider">
-                            Brightness (%) - 
+                            Brightness (%) -
                             <span id="brightnessValue" class="ml-2"></span>
                         </label>
                         <input class="block appearance-none w-full bg-gray-200 rounded h-2 overflow-hidden" type="range" id="brightnessSlider" name="brightness" min="0" max="100" value="50" />
@@ -115,7 +134,7 @@
                             </label>
                         </div>
                     </div>
-                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="submit">
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="setParameter">
                         Submit
                     </button>
                 </form>
