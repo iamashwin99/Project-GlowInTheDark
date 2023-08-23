@@ -67,48 +67,49 @@
                 </label>
                 <input class="mx-6 py-6 appearance-none bg-gray-200 w-1/2 rounded h-2 overflow-hidden" type="range" id="brightnessSlider" name="brightness" min="0" max="100" value="50" />
             </div>
-                    <div class="my-4">
-                        <label class="block font-bold mb-2" for="delay">
-                            Refresh delay (ms) -
-                            <span id="delayValue" class="ml-2"></span>
-                        </label>
-                        <input class="block appearance-none w-full bg-gray-200 rounded h-2 overflow-hidden" type="range" id="delay" name="delay" min="0" max="200" value="20" />
-                    </div>
-                    <div class="my-4">
-                        <label class="block font-bold mb-2">
-                            Spacing
-                        </label>
-                        <label class="inline-flex items-center">
-                            <input type="radio" class="form-radio" name="spacing" value="0" checked />
-                            <span class="ml-2">None</span>
-                        </label>
-                        <label class="inline-flex items-center ml-6">
-                            <input type="radio" class="form-radio" name="spacing" value="1" />
-                            <span class="ml-2">1</span>
-                        </label>
-                        <label class="inline-flex items-center ml-6">
-                            <input type="radio" class="form-radio" name="spacing" value="2" />
-                            <span class="ml-2">2</span>
-                        </label>
-                        <label class="inline-flex items-center ml-6">
-                            <input type="radio" class="form-radio" name="spacing" value="3" />
-                            <span class="ml-2">3</span>
-                        </label>
-                    </div>
-                    <div class="my-4">
-                        <label class="block font-bold mb-2">
+            <div class="my-4 flex flex-row align-middle">
+                <label class="font-bold text-2xl mb-2" for="delay">
+                    Refresh delay:
+                    <span id="delayValue" class="ml-2"></span>
+                    ms
+                </label>
+                <input class="mx-6 py-6 appearance-none bg-gray-200 w-1/2 rounded h-2 overflow-hidden" type="range" id="delay" name="delay" min="0" max="200" value="20" />
+            </div>
+            <div class="my-4 flex flex-row align-middle">
+                <label class="font-bold text-2xl mb-2">
+                    Spacing
+                </label>
+                <label class=" mx-6 inline-flex items-center">
+                    <input type="radio" class="form-radio" name="spacing" value="0" checked />
+                    <span class="ml-4">None</span>
+                </label>
+                <label class="inline-flex items-center ml-6">
+                    <input type="radio" class="form-radio" name="spacing" value="1" />
+                    <span class="ml-4">1</span>
+                </label>
+                <label class="inline-flex items-center ml-6">
+                    <input type="radio" class="form-radio" name="spacing" value="2" />
+                    <span class="ml-4">2</span>
+                </label>
+                <label class="inline-flex items-center ml-6">
+                    <input type="radio" class="form-radio" name="spacing" value="3" />
+                    <span class="ml-4">3</span>
+                </label>
+            </div>
+                    <div class="my-4 flex flex-row align-middle">
+                        <label class="font-bold text-2xl mb-2">
                             Pattern
                         </label>
-                        <div class="flex">
-                            <label class="block font-bold mb-2">
+                        <div class=""my-4 mx-6 flex flex-row align-middle">
+                            <label class="font-bold text-2xl mb-2">
                                 <input type="radio" name="pattern" value="rainbow" checked />
                                 Rainbow
                             </label>
-                            <label class="block font-bold mb-2 ml-6">
+                            <label class="font-bold text-2xl mb-2 ml-6">
                                 <input type="radio" name="pattern" value="strand" />
                                 Strand
                             </label>
-                            <label class="block font-bold mb-2 ml-6">
+                            <label class="font-bold text-2xl mb-2 ml-6">
                                 <input type="radio" name="pattern" value="custom" id="customRadio" onclick="toggleCustom()" />
                                 Custom
                             </label>
@@ -139,7 +140,7 @@
                             </label>
                         </div>
                     </div>
-                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick=setParameter()>
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded align-middle" onclick=setParameter()>
                         Submit
                     </button>
                 <!-- </form> -->
