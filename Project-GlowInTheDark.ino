@@ -66,7 +66,7 @@ void setup() {
 
   server.onNotFound(handleNotFound);
   server.on("/", HTTP_GET, handleRoot);
-  server.on("/set", HTTP_GET, parseQueryString);
+  server.on("/set", HTTP_POST, parseQueryString);
   /*
   We need to handle get requests to the /set path. here is a sample uri
   /set?brightness=50&delay=33&spacing=1&pattern=strand&pixel1=%23000000&pixel2=%23000000&pixel3=%23000000&pixel4=%23000000&pixel5=%23000000&pixel6=%23000000
@@ -100,6 +100,7 @@ void handleNotFound() {
   }
 
   server.send ( 404, "text/plain", message );
+  Serial.println(message);
 }
 
 void handleRoot() {
