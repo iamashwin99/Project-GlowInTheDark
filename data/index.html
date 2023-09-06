@@ -14,7 +14,7 @@
                     customSection.style.display = "none";
                 }
             }
-            function setParameter(){
+            function setParameterPOST(){
                 // sends the parameters via a POST request to the server on /set endpoint
                 var  xhr = new XMLHttpRequest();
                 xhr.open("POST", "/set", true);
@@ -32,6 +32,25 @@
                 };
                 xhr.send(JSON.stringify(data));
 
+            }
+            function setParameterGET(){
+                // set parameters via a get request to the server on /set endpoint
+                //eg /set?brightness=50&delay=33&spacing=1&pattern=strand&pixel1=%23000000&pixel2=%23000000&pixel3=%23000000&pixel4=%23000000&pixel5=%23000000&pixel6=%23000000
+                var  xhr = new XMLHttpRequest();
+                var url = "/set?";
+                url += "brightness=" + document.getElementById('brightnessSlider').value;
+                url += "&delay=" + document.getElementById('delay').value;
+                url += "&spacing=" + document.querySelector('input[name="spacing"]:checked').value;
+                url += "&pattern=" + document.querySelector('input[name="pattern"]:checked').value;
+                url += "&pixel1=" + document.getElementById('pixel1').value;
+                url += "&pixel2=" + document.getElementById('pixel2').value;
+                url += "&pixel3=" + document.getElementById('pixel3').value;
+                url += "&pixel4=" + document.getElementById('pixel4').value;
+                url += "&pixel5=" + document.getElementById('pixel5').value;
+
+                xhr.open("GET", url, true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.send();
             }
             function resetDevice(){
                 // sends a POST request to the server on /reset endpoint
@@ -147,7 +166,7 @@
                             </label>
                         </div>
                     </div>
-                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded align-middle" onclick=setParameter()>
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded align-middle" onclick=setParameterGET()>
                         Submit
                     </button>
                 <!-- </form> -->
