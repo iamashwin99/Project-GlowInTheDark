@@ -33,6 +33,13 @@
                 xhr.send(JSON.stringify(data));
 
             }
+            function resetDevice(){
+                // sends a POST request to the server on /reset endpoint
+                var  xhr = new XMLHttpRequest();
+                xhr.open("POST", "/reset", true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.send();
+            }
             window.addEventListener('DOMContentLoaded', function() {
                 var brightnessSlider = document.getElementById('brightnessSlider');
                 var brightnessValue = document.getElementById('brightnessValue');
@@ -144,6 +151,11 @@
                         Submit
                     </button>
                 <!-- </form> -->
+                <!-- Add another reset button that sends a POST request to /reset -->
+                <div class="my-4">
+                    <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded align-middle" onclick=resetDevice()>
+                        Reset
+                    </button>
         </div>
     </body>
 </html>
