@@ -31,7 +31,7 @@ uint32_t pixelValues[6] = {0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x0
 uint8_t brightnessValue = 50;   // Brightness
 uint8_t delayValue = 20;        // Delay between frames
 String patternValue = "strand"; // Pattern to display : rainbow, strand, custom, allsame
-
+long firstPixelHue = 0;
 // --- Public function definitions ---
 
 // Initial setups
@@ -169,7 +169,7 @@ static void strandedPattern(int wait)
   strip.show();
   delay(wait*(leds_to_skip + 1)); // Pause ; 20 milliseconds ~50 FPS
   head = head + (leds_to_skip + 1);
-
+  // set up state for next cycle
   if(head >= NUMPIXELS) {         // Increment head index.  Off end of strip?
     head = 0;                       //  Yes, reset head index to start
     if((color >>= 8) == 0)          //  Next color (R->G->B) ... past blue now?
@@ -184,28 +184,27 @@ static void strandedPattern(int wait)
 void rainbowPattern(int wait)
 {
   Serial.println("Rainbow Pattern");
-  // Hue of first pixel runs 5 complete loops through the color wheel.
-  // Color wheel has a range of 65536 but it's OK if we roll over, so
-  // just count from 0 to 5*65536. Adding 256 to firstPixelHue each time
-  // means we'll make 5*65536/256 = 1280 passes through this outer loop:
-  for (long firstPixelHue = 0; firstPixelHue < 5 * 65536; firstPixelHue += 256)
-  {
-    for (int i = 0; i < strip.numPixels(); i = i + (leds_to_skip + 1))
+  // Color wheel has a range of 65536
+  // just count from 0 to 65536. Adding 256 to firstPixelHue each time
+  firstPixelHue += 256;
+  if (firstPixelHue >= 65536){
+    firstPixelHue = 0;
+  }
+  for (int i = 0; i < strip.numPixels(); i = i + (leds_to_skip + 1))
     { // For each pixel in strip...
       // Offset pixel hue by an amount to make one full revolution of the
       // color wheel (range of 65536) along the length of the strip
       // (strip.numPixels() steps):
-      int pixelHue = firstPixelHue + (i * 65536L / strip.numPixels());
+      int pixelHue = firstPixelHue + (i * 65536L / (strip.numPixels()*(leds_to_skip+1)));
       // strip.ColorHSV() can take 1 or 3 arguments: a hue (0 to 65535) or
       // optionally add saturation and value (brightness) (each 0 to 255).
       // Here we're using just the single-argument hue variant. The result
       // is passed through strip.gamma32() to provide 'truer' colors
       // before assigning to each pixel:
       strip.setPixelColor(i, strip.gamma32(strip.ColorHSV(pixelHue)));
-    }
-    strip.show(); // Update strip with new contents
-    delay(wait);  // Pause for a moment
-  }
+    };
+  strip.show(); // Update strip with new contents
+  delay(wait);  // Pause for a moment
 }
 
 static void customPattern(int wait)
