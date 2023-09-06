@@ -167,19 +167,16 @@ static void strandedPattern(int wait)
   strip.setPixelColor(head, color);
   strip.setPixelColor(tail, 0);
   strip.show();
-  delay(wait);
-  if (leds_to_skip > 0)
-  {
-    for (uint8_t i = 0; i < leds_to_skip; i++)
-    {
-      if (++head >= NUMPIXELS)
-        head = 0;
-      if (++tail >= NUMPIXELS)
-        tail = 0;
-    }
+  delay(wait*(leds_to_skip + 1)); // Pause ; 20 milliseconds ~50 FPS
+  head = head + (leds_to_skip + 1);
+
+  if(head >= NUMPIXELS) {         // Increment head index.  Off end of strip?
+    head = 0;                       //  Yes, reset head index to start
+    if((color >>= 8) == 0)          //  Next color (R->G->B) ... past blue now?
+      color = 0xFF0000;             //   Yes, reset to red
   }
-  if ((color >>= 8) == 0)
-    color = 0xFF0000;
+  tail = tail + (leds_to_skip + 1);
+  if(tail >= NUMPIXELS) tail = 0; // Increment, reset tail index
 }
 
 // Rainbow cycle along whole strip. Pass delay time (in ms) between frames.
@@ -267,6 +264,7 @@ void parseQueryString()
   Serial.println("pixelValues[5]: " + pixelValues[5]);
 
   // send 200 and redirect to root
+  strip.clear();
   server.send(200, "text/plain", "OK");
 
   handleRoot();
