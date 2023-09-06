@@ -26,7 +26,7 @@ int16_t tail = -10; // Index of first 'off' pixel
 
 uint32_t color = 0xFF0000;                                                              // 'On' color (starts red)
 uint8_t leds_to_skip = 1;                                                               // Number of LEDs to skip between each LED
-uint32_t pixelValues[6] = {0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000}; // if custom pattern, pixel values
+uint32_t pixelValues[6] = {0, 0, 0, 0, 0, 0}; // if custom pattern, pixel values
 
 uint8_t brightnessValue = 50;   // Brightness
 uint8_t delayValue = 20;        // Delay between frames
@@ -209,9 +209,12 @@ void rainbowPattern(int wait)
 
 static void customPattern(int wait)
 {
+  uint8_t j = 0;
+  size_t pvn = sizeof(pixelValues)/sizeof(pixelValues[0]);
+
   for (int i = 0; i < NUMPIXELS; i += (leds_to_skip + 1))
   {
-    strip.setPixelColor(i, pixelValues[i]);
+    strip.setPixelColor(i, pixelValues[(j++)%pvn]);
   }
   strip.show();
   delay(wait);
@@ -237,30 +240,30 @@ void parseQueryString()
    */
 
   Serial.println("Parsing . . . ");
+  Serial.println("Got ::: ");
   brightnessValue = server.arg(0).toInt();
+  Serial.println("brightnessValue: " + String(brightnessValue));
   delayValue = server.arg(1).toInt();
+  Serial.println("delayValue: " + String(delayValue));
   leds_to_skip = server.arg(2).toInt();
+  Serial.println("leds_to_skip: " + String(leds_to_skip));
   patternValue = server.arg(3);
+  Serial.println("patternValue: " + patternValue);
   if (patternValue == "custom")
   {
-    pixelValues[0] = hex_string_to_int(server.arg(4));
-    pixelValues[1] = hex_string_to_int(server.arg(5));
-    pixelValues[2] = hex_string_to_int(server.arg(6));
-    pixelValues[3] = hex_string_to_int(server.arg(7));
-    pixelValues[4] = hex_string_to_int(server.arg(8));
-    pixelValues[5] = hex_string_to_int(server.arg(9));
+    pixelValues[0] = string_number_to_int(server.arg(4));
+    pixelValues[1] = string_number_to_int(server.arg(5));
+    pixelValues[2] = string_number_to_int(server.arg(6));
+    pixelValues[3] = string_number_to_int(server.arg(7));
+    pixelValues[4] = string_number_to_int(server.arg(8));
+    pixelValues[5] = string_number_to_int(server.arg(9));
+    Serial.println("pixelValues[0]: " + String(pixelValues[0]));
+    Serial.println("pixelValues[1]: " + String(pixelValues[1]));
+    Serial.println("pixelValues[2]: " + String(pixelValues[2]));
+    Serial.println("pixelValues[3]: " + String(pixelValues[3]));
+    Serial.println("pixelValues[4]: " + String(pixelValues[4]));
+    Serial.println("pixelValues[5]: " + String(pixelValues[5]));
   }
-  Serial.println("Got ::: ");
-  Serial.println("brightnessValue: " + String(brightnessValue));
-  Serial.println("delayValue: " + String(delayValue));
-  Serial.println("leds_to_skip: " + String(leds_to_skip));
-  Serial.println("patternValue: " + patternValue);
-  Serial.println("pixelValues[0]: " + pixelValues[0]);
-  Serial.println("pixelValues[1]: " + pixelValues[1]);
-  Serial.println("pixelValues[2]: " + pixelValues[2]);
-  Serial.println("pixelValues[3]: " + pixelValues[3]);
-  Serial.println("pixelValues[4]: " + pixelValues[4]);
-  Serial.println("pixelValues[5]: " + pixelValues[5]);
 
   // send 200 and redirect to root
   strip.clear();
@@ -269,6 +272,11 @@ void parseQueryString()
   handleRoot();
 }
 
+
+uint32_t string_number_to_int(String num_string){
+  uint32_t num_int = num_string.toInt();
+  return num_int;
+}
 uint32_t hex_string_to_int(String hex_string)
 {
   /*
