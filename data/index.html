@@ -14,6 +14,16 @@
                     customSection.style.display = "none";
                 }
             }
+
+            function toggle_aio() {
+                var customSection = document.getElementById("aioSection");
+                var customRadio = document.getElementById("aioRadio");
+                if (customRadio.checked) {
+                    customSection.style.display = "block";
+                } else {
+                    customSection.style.display = "none";
+                }
+            }
             function colour_to_int(colour){
                 // converts a hex colour to a 16bit integer
                 // eg #000000 -> 0
@@ -148,6 +158,10 @@
                                 <input type="radio" name="pattern" value="custom" id="customRadio" onclick="toggleCustom()" />
                                 Custom
                             </label>
+                            <label class="font-bold text-2xl mb-2 ml-6">
+                                <input type="radio" name="pattern" value="aio" id="aioRadio" onclick="toggle_aio()" />
+                                AIO
+                            </label>
                         </div>
                     </div>
                     <div class="my-4" id="customSection" style="display: none;">
@@ -172,6 +186,16 @@
                             </label>
                             <label class="inline-block mr-4">
                                 <input type="color" id="pixel6" name="pixel6" />
+                            </label>
+                        </div>
+                    </div>
+                    <div class="my-4" id="aioSection" style="display: none;">
+                        <label class="block font-bold mb-2">
+                            aio Pattern :
+                        </label>
+                        <div class="flex items-center">
+                            <label class="inline-block mr-4">
+                                <input type="color" id="pixel1" name="pixel1" />
                             </label>
                         </div>
                     </div>
