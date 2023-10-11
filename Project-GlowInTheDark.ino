@@ -207,6 +207,16 @@ void rainbowPattern(int wait)
   delay(wait);  // Pause for a moment
 }
 
+static void aio(int wait){
+  // set all pixels to the same color
+  for (int i = 0; i < NUMPIXELS;  i += (leds_to_skip + 1))
+  {
+    strip.setPixelColor(i, pixelValues[0]);
+  }
+  strip.show();
+  delay(wait);
+}
+
 static void customPattern(int wait)
 {
   uint8_t j = 0;
