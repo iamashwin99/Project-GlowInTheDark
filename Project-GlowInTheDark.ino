@@ -30,7 +30,7 @@ uint32_t pixelValues[6] = {0, 0, 0, 0, 0, 0}; // if custom pattern, pixel values
 
 uint8_t brightnessValue = 50;   // Brightness
 uint8_t delayValue = 20;        // Delay between frames
-String patternValue = "strand"; // Pattern to display : rainbow, strand, custom, allsame
+String patternValue = "aio"; // Pattern to display : rainbow, strand, custom, allsame
 long firstPixelHue = 0;
 // --- Public function definitions ---
 
@@ -149,6 +149,10 @@ static void handleLedStrip()
   else if (patternValue == "custom")
   {
     customPattern(delayValue);
+  }
+  else if (patternValue = "aio")
+  {
+    aio(delayValue);
   }
   else
   {
