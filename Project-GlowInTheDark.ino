@@ -25,7 +25,7 @@ int16_t tail = -10; // Index of first 'off' pixel
 // Set some default values
 
 uint32_t color = 0xFF0000;                                                              // 'On' color (starts red)
-uint8_t leds_to_skip = 1;                                                               // Number of LEDs to skip between each LED
+uint8_t leds_to_skip = 0;                                                               // Number of LEDs to skip between each LED
 uint32_t pixelValues[6] = {INT32_MAX, 0, 0, 0, 0, 0}; // if custom pattern, pixel values
 
 uint8_t brightnessValue = 50;   // Brightness
